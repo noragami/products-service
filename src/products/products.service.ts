@@ -3,6 +3,9 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Product } from './entities/product.entity';
+import { PaginationDto } from '../common/dto/pagination.dto';
+import { PaginatedResponse } from '../common/interfaces/paginated-response.interface';
+import { PaginationHelper } from '../common/utils/pagination.helper';
 
 @Injectable()
 export class ProductsService {
@@ -32,8 +35,25 @@ export class ProductsService {
 		}
 	}
 
-	async findAll(): Promise<Product[]> {
-		return this.productModel.findAll();
+	async findAll(paginationDto: PaginationDto): Promise<PaginatedResponse<Product>> {
+		const { page, limit, offset } = paginationDto;
+
+		// Single query for both count and data
+		const { count: totalItems, rows: products } = await this.productModel.findAndCountAll({
+			limit,
+			offset,
+			order: [
+				['createdAt', 'DESC'], // Primary ordering by creation date
+				['id', 'ASC'] // Secondary ordering for consistency (tiebreaker)
+			],
+		});
+
+		return PaginationHelper.createPaginatedResponse(
+			products,
+			page,
+			limit,
+			totalItems
+		);
 	}
 
 	findOne(id: number): Promise<Product | null> {
