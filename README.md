@@ -4,7 +4,7 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-A robust **Products Management API** built with **NestJS**, **TypeScript**, and **Sequelize**. This service provides complete CRUD operations for product management with advanced features like pagination, validation, health monitoring, and comprehensive testing.
+**Products Management API** is built with **NestJS**, **TypeScript**, and **Sequelize**. This service provides CRUD operations for product management with advanced features like pagination, validation, health monitoring, and comprehensive testing.
 
 ## 🚀 Features
 
@@ -543,3 +543,7 @@ npm run test
 ## 📄 License
 
 This project is [MIT licensed](LICENSE).
+
+## 👨‍💻 Author
+
+[Daniele Dell'Erba](https://github.com/noragami)
