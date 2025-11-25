@@ -142,7 +142,7 @@ describe('ProductsController', () => {
 			mockProductsService.findOne.mockResolvedValue(mockProduct);
 
 			// Act
-			const result = await controller.findOne('1');
+			const result = await controller.findOne(1);
 
 			// Assert
 			expect(mockProductsService.findOne).toHaveBeenCalledWith(1);
@@ -150,24 +150,22 @@ describe('ProductsController', () => {
 			expect(result).toEqual(mockProduct);
 		});
 
-		it('should return null when product not found', async () => {
+		it('should throw NotFoundException when product not found', async () => {
 			// Arrange
-			mockProductsService.findOne.mockResolvedValue(null);
+			const notFoundError = new Error('Product with id 999 not found');
+			mockProductsService.findOne.mockRejectedValue(notFoundError);
 
-			// Act
-			const result = await controller.findOne('999');
-
-			// Assert
+			// Act & Assert
+			await expect(controller.findOne(999)).rejects.toThrow(notFoundError);
 			expect(mockProductsService.findOne).toHaveBeenCalledWith(999);
-			expect(result).toBeNull();
 		});
 
-		it('should convert string id to number', async () => {
+		it('should accept number id directly', async () => {
 			// Arrange
 			mockProductsService.findOne.mockResolvedValue(mockProduct);
 
 			// Act
-			await controller.findOne('123');
+			await controller.findOne(123);
 
 			// Assert
 			expect(mockProductsService.findOne).toHaveBeenCalledWith(123);
@@ -181,7 +179,7 @@ describe('ProductsController', () => {
 			mockProductsService.update.mockResolvedValue(updatedProduct);
 
 			// Act
-			const result = await controller.update('1', mockUpdateProductDto);
+			const result = await controller.update(1, mockUpdateProductDto);
 
 			// Assert
 			expect(mockProductsService.update).toHaveBeenCalledWith(1, mockUpdateProductDto);
@@ -189,12 +187,12 @@ describe('ProductsController', () => {
 			expect(result).toEqual(updatedProduct);
 		});
 
-		it('should convert string id to number', async () => {
+		it('should accept number id directly', async () => {
 			// Arrange
 			mockProductsService.update.mockResolvedValue(mockProduct);
 
 			// Act
-			await controller.update('456', mockUpdateProductDto);
+			await controller.update(456, mockUpdateProductDto);
 
 			// Assert
 			expect(mockProductsService.update).toHaveBeenCalledWith(456, mockUpdateProductDto);
@@ -206,7 +204,7 @@ describe('ProductsController', () => {
 			mockProductsService.update.mockRejectedValue(serviceError);
 
 			// Act & Assert
-			await expect(controller.update('999', mockUpdateProductDto)).rejects.toThrow(serviceError);
+			await expect(controller.update(999, mockUpdateProductDto)).rejects.toThrow(serviceError);
 			expect(mockProductsService.update).toHaveBeenCalledWith(999, mockUpdateProductDto);
 		});
 	});
@@ -217,7 +215,7 @@ describe('ProductsController', () => {
 			mockProductsService.remove.mockResolvedValue(undefined);
 
 			// Act
-			const result = await controller.remove('1');
+			const result = await controller.remove(1);
 
 			// Assert
 			expect(mockProductsService.remove).toHaveBeenCalledWith(1);
@@ -225,12 +223,12 @@ describe('ProductsController', () => {
 			expect(result).toBeUndefined();
 		});
 
-		it('should convert string id to number', async () => {
+		it('should accept number id directly', async () => {
 			// Arrange
 			mockProductsService.remove.mockResolvedValue(undefined);
 
 			// Act
-			await controller.remove('789');
+			await controller.remove(789);
 
 			// Assert
 			expect(mockProductsService.remove).toHaveBeenCalledWith(789);
@@ -241,7 +239,7 @@ describe('ProductsController', () => {
 			mockProductsService.remove.mockResolvedValue(undefined);
 
 			// Act
-			const result = await controller.remove('999');
+			const result = await controller.remove(999);
 
 			// Assert
 			expect(mockProductsService.remove).toHaveBeenCalledWith(999);
@@ -254,7 +252,7 @@ describe('ProductsController', () => {
 			mockProductsService.remove.mockRejectedValue(serviceError);
 
 			// Act & Assert
-			await expect(controller.remove('1')).rejects.toThrow(serviceError);
+			await expect(controller.remove(1)).rejects.toThrow(serviceError);
 			expect(mockProductsService.remove).toHaveBeenCalledWith(1);
 		});
 	});
