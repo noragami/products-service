@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
@@ -33,7 +34,9 @@ describe('ProductsController', () => {
 	const mockPaginationDto: PaginationDto = {
 		page: 1,
 		limit: 10,
-		get offset() { return 0; }
+		get offset() {
+			return 0;
+		},
 	};
 
 	const mockPaginatedResponse = {
@@ -123,7 +126,9 @@ describe('ProductsController', () => {
 			const emptyPaginationDto: PaginationDto = {
 				page: 1,
 				limit: 10,
-				get offset() { return 0; }
+				get offset() {
+					return 0;
+				},
 			};
 			mockProductsService.findAll.mockResolvedValue(mockPaginatedResponse);
 

@@ -233,7 +233,7 @@ describe('ProductsService', () => {
 
 			// Act & Assert
 			await expect(service.findOne(999)).rejects.toThrow(
-				new NotFoundException('Product with id 999 not found')
+				new NotFoundException('Product with id 999 not found'),
 			);
 		});
 	});
