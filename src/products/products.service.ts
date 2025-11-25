@@ -28,7 +28,9 @@ export class ProductsService {
 			if (error.name === 'SequelizeUniqueConstraintError') {
 				const constraintError = error.errors?.find(err => err.path === 'productToken');
 				if (constraintError) {
-					throw new ConflictException(`Product token '${createProductDto.productToken}' already exists`);
+					throw new ConflictException(
+						`Product token '${createProductDto.productToken}' already exists`,
+					);
 				}
 			}
 			throw error;
@@ -44,16 +46,11 @@ export class ProductsService {
 			offset,
 			order: [
 				['createdAt', 'DESC'], // Primary ordering by creation date
-				['id', 'ASC'] // Secondary ordering for consistency (tiebreaker)
+				['id', 'ASC'], // Secondary ordering for consistency (tiebreaker)
 			],
 		});
 
-		return PaginationHelper.createPaginatedResponse(
-			products,
-			page,
-			limit,
-			totalItems
-		);
+		return PaginationHelper.createPaginatedResponse(products, page, limit, totalItems);
 	}
 
 	findOne(id: number): Promise<Product | null> {

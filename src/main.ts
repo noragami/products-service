@@ -5,11 +5,13 @@ import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
-	app.useGlobalPipes(new ValidationPipe({
-		transform: true,
-		whitelist: true,
-		forbidNonWhitelisted: true,
-	}));
+	app.useGlobalPipes(
+		new ValidationPipe({
+			transform: true,
+			whitelist: true,
+			forbidNonWhitelisted: true,
+		}),
+	);
 
 	const config = new DocumentBuilder()
 		.setTitle('Products Service API')
