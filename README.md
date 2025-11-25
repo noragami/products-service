@@ -137,7 +137,7 @@ products (
 
 ### **1. Clone & Install**
 ```bash
-git clone <repository-url>
+git clone https://github.com/noragami/products-service.git
 cd products-service
 npm install
 ```
@@ -457,7 +457,7 @@ PORT=3000
 #### **Option 1: Docker Compose**
 ```bash
 # Clone repository
-git clone <repository-url>
+git clone https://github.com/noragami/products-service.git
 cd products-service
 
 # Configure environment
