@@ -227,15 +227,14 @@ describe('ProductsService', () => {
 			expect(result).toEqual(mockProduct);
 		});
 
-		it('should return null when product not found', async () => {
+		it('should throw NotFoundException when product not found', async () => {
 			// Arrange
 			mockProductModel.findOne.mockResolvedValue(null);
 
-			// Act
-			const result = await service.findOne(999);
-
-			// Assert
-			expect(result).toBeNull();
+			// Act & Assert
+			await expect(service.findOne(999)).rejects.toThrow(
+				new NotFoundException('Product with id 999 not found')
+			);
 		});
 	});
 

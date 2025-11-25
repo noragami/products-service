@@ -56,20 +56,22 @@ export class ProductsService {
 		return PaginationHelper.createPaginatedResponse(products, page, limit, totalItems);
 	}
 
-	findOne(id: number): Promise<Product | null> {
-		return this.productModel.findOne({
+	async findOne(id: number): Promise<Product> {
+		const product = await this.productModel.findOne({
 			where: {
 				id,
 			},
 		});
-	}
-
-	async update(id: number, updateProductDto: UpdateProductDto): Promise<Product> {
-		const product = await this.findOne(id);
 
 		if (!product) {
 			throw new NotFoundException(`Product with id ${id} not found`);
 		}
+
+		return product;
+	}
+
+	async update(id: number, updateProductDto: UpdateProductDto): Promise<Product> {
+		const product = await this.findOne(id);
 
 		await product.update({
 			stock: updateProductDto.stock,
@@ -80,7 +82,11 @@ export class ProductsService {
 	}
 
 	async remove(id: number): Promise<void> {
-		const product = await this.findOne(id);
+		const product = await this.productModel.findOne({
+			where: {
+				id,
+			},
+		});
 
 		if (product) {
 			await product.destroy();
