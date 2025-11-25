@@ -5,8 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { ProductsModule } from './products/products.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), ProductsModule],
-  controllers: [AppController],
-  providers: [AppService],
+	imports: [ConfigModule.forRoot(), ProductsModule],
+	controllers: [AppController],
+	providers: [AppService],
 })
 export class AppModule {}
