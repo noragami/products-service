@@ -1,0 +1,30 @@
+# Docker Compose override for development
+# This file is automatically loaded by docker-compose and overrides/extends docker-compose.yml
+
+services:
+  products-service:
+    # Override build to use development target if needed
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+    volumes:
+      # Mount source code for hot reload (if needed for debugging)
+      - ./src:/app/src:ro
+      # Mount node_modules as anonymous volume to avoid conflicts
+      - /app/node_modules
+    # Override command for development if needed
+    # command: npm run start:dev
+    ports:
+      - "3000:3000"
+      # Expose debug port
+      - "9229:9229"
+
+  mysql:
+    # Add port mapping for direct database access during development
+    ports:
+      - "3306:3306"
+    # Mount init scripts if needed
+    # volumes:
+    #   - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
