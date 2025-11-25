@@ -6,14 +6,14 @@ import { Column, Model, Table, Unique } from 'sequelize-typescript';
 export class Product extends Model {
 	@Unique
 	@Column
-	productToken: string;
+	declare productToken: string;
 
 	@Column
-	name: string;
+	declare name: string;
 
 	@Column
-	price: number;
+	declare price: number;
 
 	@Column
-	stock: number;
+	declare stock: number;
 }
