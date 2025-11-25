@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -11,15 +11,25 @@ export class ProductsService {
 		private productModel: typeof Product,
 	) {}
 
-	create(createProductDto: CreateProductDto): Promise<Product> {
-		return this.productModel.create({
-			productToken: createProductDto.productToken,
-			name: createProductDto.name,
-			price: createProductDto.price,
-			stock: createProductDto.stock,
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		});
+	async create(createProductDto: CreateProductDto): Promise<Product> {
+		try {
+			return await this.productModel.create({
+				productToken: createProductDto.productToken,
+				name: createProductDto.name,
+				price: createProductDto.price,
+				stock: createProductDto.stock,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			});
+		} catch (error) {
+			if (error.name === 'SequelizeUniqueConstraintError') {
+				const constraintError = error.errors?.find(err => err.path === 'productToken');
+				if (constraintError) {
+					throw new ConflictException(`Product token '${createProductDto.productToken}' already exists`);
+				}
+			}
+			throw error;
+		}
 	}
 
 	async findAll(): Promise<Product[]> {
@@ -34,8 +44,19 @@ export class ProductsService {
 		});
 	}
 
-	update(id: number, updateProductDto: UpdateProductDto) {
-		return `This action updates a #${id} product`;
+	async update(id: number, updateProductDto: UpdateProductDto): Promise<Product> {
+		const product = await this.findOne(id);
+
+		if (!product) {
+			throw new NotFoundException(`Product with id ${id} not found`);
+		}
+
+		await product.update({
+			stock: updateProductDto.stock,
+			updatedAt: new Date(),
+		});
+
+		return product;
 	}
 
 	async remove(id: number): Promise<void> {
