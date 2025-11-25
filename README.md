@@ -240,37 +240,38 @@ For manual API testing, follow the [Development Workflow](#-development-workflow
 ## 📝 API Usage Examples
 
 ### **Create Product**
+**Request:**
 ```bash
 curl -X POST http://localhost:3000/products \
   -H "Content-Type: application/json" \
   -d '{
-    "productToken": "PROD001",
-    "name": "Gaming Laptop",
+    "productToken": "pdtkn001",
+    "name": "HD Monitor",
     "price": 1299.99,
     "stock": 15
   }'
 ```
 
+**Response:** `201 Created`
+```json
+{
+  "id": 1,
+  "productToken": "pdtkn001",
+  "name": "HD Monitor",
+  "price": 1299.99,
+  "stock": 15,
+  "createdAt": "2025-11-25T10:30:00Z",
+  "updatedAt": "2025-11-25T10:30:00Z"
+}
+```
+
 ### **Get Products with Pagination**
+**Request:**
 ```bash
 curl "http://localhost:3000/products?page=1&limit=10"
 ```
 
-### **Update Stock**
-```bash
-curl -X PATCH http://localhost:3000/products/1 \
-  -H "Content-Type: application/json" \
-  -d '{"stock": 25}'
-```
-
-### **Health Check**
-```bash
-curl http://localhost:3000/health
-```
-
-## 🔍 Response Examples
-
-### **Paginated Products**
+**Response:** `200 OK`
 ```json
 {
   "data": [
@@ -280,8 +281,8 @@ curl http://localhost:3000/health
       "name": "HD Monitor",
       "price": 1299.99,
       "stock": 15,
-      "createdAt": "2025-11-15T10:30:00Z",
-      "updatedAt": "2025-11-15T10:30:00Z"
+      "createdAt": "2025-11-25T10:30:00Z",
+      "updatedAt": "2025-11-25T10:30:00Z"
     }
   ],
   "meta": {
@@ -295,7 +296,73 @@ curl http://localhost:3000/health
 }
 ```
 
-### **Health Status**
+### **Get Single Product**
+**Request:**
+```bash
+curl http://localhost:3000/products/1
+```
+
+**Response:** `200 OK`
+```json
+{
+  "id": 1,
+  "productToken": "pdtkn001",
+  "name": "HD Monitor",
+  "price": 1299.99,
+  "stock": 15,
+  "createdAt": "2025-11-25T10:30:00Z",
+  "updatedAt": "2025-11-25T10:30:00Z"
+}
+```
+
+**Error Response:** `404 Not Found`
+```json
+{
+  "message": "Product with id 999 not found",
+  "error": "Not Found",
+  "statusCode": 404
+}
+```
+
+### **Update Product Stock**
+**Request:**
+```bash
+curl -X PATCH http://localhost:3000/products/1 \
+  -H "Content-Type: application/json" \
+  -d '{"stock": 25}'
+```
+
+**Response:** `200 OK`
+```json
+{
+  "id": 1,
+  "productToken": "pdtkn001",
+  "name": "HD Monitor",
+  "price": 1299.99,
+  "stock": 25,
+  "createdAt": "2025-11-25T10:30:00Z",
+  "updatedAt": "2025-11-25T12:15:00Z"
+}
+```
+
+### **Delete Product**
+**Request:**
+```bash
+curl -X DELETE http://localhost:3000/products/1
+```
+
+**Response:** `204 No Content`
+```
+(Empty response body)
+```
+
+### **Health Check**
+**Request:**
+```bash
+curl http://localhost:3000/health
+```
+
+**Response:** `200 OK`
 ```json
 {
   "status": "ok",
@@ -310,6 +377,7 @@ curl http://localhost:3000/health
   }
 }
 ```
+
 
 ## 🛡️ Validation Rules
 
