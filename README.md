@@ -165,7 +165,7 @@ NODE_ENV=development
 ### **3. Database Setup**
 ```bash
 # Start MySQL with Docker Compose (creates database automatically)
-docker-compose up -d
+docker-compose up mysql -d
 
 # Run database migrations to create tables and indexes
 npx sequelize-cli db:migrate
@@ -181,16 +181,12 @@ npx sequelize-cli db:migrate
 #### **1. Start Database**
 ```bash
 # Start MySQL container (required for manual testing)
-docker-compose up -d
+docker-compose up mysql -d
 ```
 
 #### **2. Start Application**
 ```bash
-# Option A: Local development (recommended)
 npm run start:dev
-
-# Option B: Docker container
-docker run -p 3000:3000 products-service
 ```
 
 #### **3. Verify Setup**
@@ -200,15 +196,6 @@ curl http://localhost:3000/health
 
 # Test products API
 curl http://localhost:3000/products
-```
-
-### **Production**
-```bash
-# Build the application
-npm run build
-
-# Start production server
-npm run start:prod
 ```
 
 ### **Access Points**
@@ -289,12 +276,12 @@ curl http://localhost:3000/health
   "data": [
     {
       "id": 1,
-      "productToken": "PROD001",
-      "name": "Gaming Laptop",
+      "productToken": "pdtkn001",
+      "name": "HD Monitor",
       "price": 1299.99,
       "stock": 15,
-      "createdAt": "2024-01-15T10:30:00Z",
-      "updatedAt": "2024-01-15T10:30:00Z"
+      "createdAt": "2025-11-15T10:30:00Z",
+      "updatedAt": "2025-11-15T10:30:00Z"
     }
   ],
   "meta": {
@@ -352,40 +339,156 @@ curl http://localhost:3000/health
 - **Input Validation**: Early request filtering
 - **Memory Monitoring**: Heap usage tracking
 
-## 🚀 Deployment
+## 🚀 Deployment via Docker
 
-### **Docker** (Optional)
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY dist ./dist
-EXPOSE 3000
-CMD ["node", "dist/main"]
+### **🐳 Complete Docker Setup**
+
+The service includes a full Docker setup with multi-stage builds, health checks, and production optimizations.
+
+#### **Quick Start (Recommended)**
+```bash
+# Option 1) Build and start all services (MySQL + Products API)
+docker-compose up --build
+
+# Option 2) Run in background
+docker-compose up --build -d
 ```
 
-### **Environment Variables**
+```bash
+# Check services status
+docker-compose ps
+```
+
+#### **Production Deployment**
+```bash
+# Build production images
+docker-compose build
+
+# Start services with restart policies
+docker-compose up -d
+
+# Run database migrations
+docker-compose exec products-service npx sequelize-cli db:migrate
+
+# Verify deployment
+curl http://localhost:3000/health
+```
+
+### **🏗️ Docker Architecture**
+
+#### **Multi-Stage Dockerfile**
+- **Builder stage**: Compiles TypeScript to JavaScript
+- **Production stage**: Minimal runtime with security optimizations
+- **Non-root user**: Runs as `nestjs:nodejs` (uid: 1001)
+- **Health checks**: Built-in `/health` endpoint monitoring
+
+#### **Services Configuration**
+```yaml
+services:
+  mysql:          # MySQL 9 database
+  products-service: # NestJS API service
+```
+
+### **📋 Available Commands**
+
+#### **Service Management**
+```bash
+# Start only database (for local development)
+docker-compose up mysql -d
+
+# Rebuild specific service
+docker-compose build products-service
+
+# Restart services
+docker-compose restart
+
+# Stop all services
+docker-compose down
+
+# Remove volumes (⚠️ deletes data)
+docker-compose down -v
+```
+
+#### **Database Operations**
+```bash
+# Run migrations
+docker-compose exec products-service npx sequelize-cli db:migrate
+
+# Check migration status
+docker-compose exec products-service npx sequelize-cli db:migrate:status
+
+# Rollback last migration
+docker-compose exec products-service npx sequelize-cli db:migrate:undo
+
+# Access MySQL directly
+docker-compose exec mysql mysql -u root -proot ecommerce
+```
+
+#### **Monitoring & Debugging**
+```bash
+# View logs
+docker-compose logs products-service
+
+# Follow logs in real-time
+docker-compose logs -f products-service
+
+# Access container shell
+docker-compose exec products-service sh
+
+# Check container resource usage
+docker stats $(docker-compose ps -q)
+```
+
+### **🌍 Environment Configuration**
+
+#### **Production Environment Variables**
 ```env
 NODE_ENV=production
-DB_HOST=your-production-db-host
+DB_HOST=mysql
 DB_PORT=3306
-DB_USERNAME=your-production-user
-DB_PASSWORD=your-production-password
+DB_USERNAME=root
+DB_PASSWORD=root
 DB_DATABASE=ecommerce
 PORT=3000
 ```
 
-### **Production Database Setup**
-```bash
-# Run migrations on production database
-NODE_ENV=production npx sequelize-cli db:migrate
+### **🚀 Production Deployment Options**
 
-# Check migration status
-NODE_ENV=production npx sequelize-cli db:migrate:status
+#### **Option 1: Docker Compose**
+```bash
+# Clone repository
+git clone <repository-url>
+cd products-service
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your production values
+
+# Deploy
+docker-compose up --build -d
+
+# Run migrations
+docker-compose exec products-service npx sequelize-cli db:migrate
 ```
 
-## 🔧 Troubleshooting
+#### **Option 2: Standalone Docker**
+```bash
+# Build image
+docker build -t products-service .
+
+# Run with external database
+docker run -d \
+  --name products-service \
+  -p 3000:3000 \
+  -e NODE_ENV=production \
+  -e DB_HOST=your-db-host \
+  -e DB_USERNAME=your-user \
+  -e DB_PASSWORD=your-password \
+  products-service
+```
+
+
+## 🔧 General Troubleshooting
 
 ### **Common Issues**
 
@@ -413,7 +516,7 @@ npx sequelize-cli db:migrate:undo
 npx sequelize-cli db:migrate --to 20251125115435-add-indexes-products-table.js
 ```
 
-#### **Port Already in Use**
+#### **Port Already in Use (Local)**
 ```bash
 # Check what's using port 3000
 lsof -i :3000
