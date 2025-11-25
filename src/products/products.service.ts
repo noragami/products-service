@@ -25,8 +25,11 @@ export class ProductsService {
 				updatedAt: new Date(),
 			});
 		} catch (error) {
-			if (error.name === 'SequelizeUniqueConstraintError') {
-				const constraintError = error.errors?.find(err => err.path === 'productToken');
+			// Type guard for Sequelize unique constraint error
+			if (this.isSequelizeUniqueConstraintError(error)) {
+				const constraintError = error.errors?.find(
+					(err: { path: string }) => err.path === 'productToken',
+				);
 				if (constraintError) {
 					throw new ConflictException(
 						`Product token '${createProductDto.productToken}' already exists`,
@@ -82,5 +85,20 @@ export class ProductsService {
 		if (product) {
 			await product.destroy();
 		}
+	}
+
+	/**
+	 * Type guard to check if error is a Sequelize unique constraint error
+	 */
+	private isSequelizeUniqueConstraintError(error: unknown): error is {
+		name: string;
+		errors?: Array<{ path: string }>;
+	} {
+		return (
+			typeof error === 'object' &&
+			error !== null &&
+			'name' in error &&
+			(error as { name: string }).name === 'SequelizeUniqueConstraintError'
+		);
 	}
 }
