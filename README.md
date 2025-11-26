@@ -189,7 +189,19 @@ docker-compose up mysql -d
 npm run start:dev
 ```
 
-#### **3. Verify Setup**
+#### **3. Code Quality & Formatting**
+```bash
+# Format code with Prettier
+npm run format
+
+# Lint and fix code issues with ESLint
+npm run lint
+
+# Run both format and lint (recommended before commits)
+npm run format && npm run lint
+```
+
+#### **4. Verify Setup**
 ```bash
 # Check health endpoint
 curl http://localhost:3000/health
